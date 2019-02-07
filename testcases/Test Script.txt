@@ -1,0 +1,237 @@
+public class QA {
+	
+	WebDriver driver;
+	
+	//Methods::
+	
+	public void login() {		
+		
+		String exePath = "chromedriver.exe";
+		System.setProperty("webdriver.chrome.driver", exePath);
+		driver = new ChromeDriver();
+		driver.get("http://localhost/index.php#");
+	}
+		
+	public void AddTodo(String name,String category,String day, String month, String year) {
+			
+		driver.findElement(By.xpath("//input[@name='data']")).sendKeys(name);	
+		WebElement Catebox = driver.findElement(By.xpath("//select[@name='category']"));
+		Select s = new Select(Catebox);
+		s.selectByVisibleText(category);
+		WebElement Day = driver.findElement(By.xpath("//select[@name='due_day']"));
+		Select s1 = new Select(Day);
+		s1.selectByVisibleText(day);
+		WebElement Month = driver.findElement(By.xpath("//select[@name='due_month']"));
+		Select s2 = new Select(Month);
+		s2.selectByVisibleText(month);
+		WebElement Year = driver.findElement(By.xpath("//select[@name='due_year']"));
+		Select s3 = new Select(Year);
+		s3.selectByVisibleText(year);
+		driver.findElement(By.xpath("//input[@value='Add']")).click();	
+		try {
+			driver.findElement(By.xpath("//*[contains(text(),'Sorry that')]")).isDisplayed();
+			driver.findElement(By.xpath("//*[contains(text(),'Back')]")).click();
+			System.out.println("Already TODO name is exists");
+		}catch(Exception e) {
+		Boolean flag =driver.findElement(By.xpath("//*[contains(text(),'"+name+"')]")).isDisplayed();
+			if(flag) {
+				System.out.println(name+" is added");
+			}else {
+				System.out.println(name+" is not added");
+			}		
+		}
+	}
+		
+		
+	public void RemoveTodo(String name) {
+		
+		driver.findElement(By.xpath("//*[@value='Remove']")).click();
+		try {
+		    driver.findElement(By.xpath("//*[starts-with(text(),'"+name+"')]/input")).isDisplayed();
+			System.out.println("Todo is not removed");
+		
+		}catch(Exception e) {
+			
+			System.out.println("Pass:Todo is removed");
+		}
+		
+	}
+			
+		
+	public void AddCategory(String name,String color,String message) {
+		
+		driver.findElement(By.xpath("//input[@name='categorydata']")).sendKeys(name);
+		WebElement Color = driver.findElement(By.xpath("//select[@name='colour']"));
+		Select s4 = new Select(Color);
+		s4.selectByVisibleText(color);
+		driver.findElement(By.xpath("//input[@value='Add category']")).click();
+		try {
+		boolean flag=driver.findElement(By.xpath("//*[text()='That colour is already being used by: ']")).isDisplayed();
+			System.out.println("Color is already there");
+			if(message.equals("NM")) {
+				driver.findElement(By.xpath("//*[text()='Nevermind']")).click();
+			}else if(message.equals("Add")){
+				driver.findElement(By.xpath("//*[text()='Add the category with this colour']")).click();
+				System.out.println("Already There and Added");
+			}else if(message.equals("rename")) {
+				driver.findElement(By.xpath("//*[text()='Rename the category']")).click();
+				System.out.println("Renamed the category");
+			}
+		}catch(Exception e) {
+			try { 
+			Boolean flag1=driver.findElement(By.xpath("//*[contains(text(),'The category you want to add already exists')]")).isDisplayed();
+			System.out.println("Category is already exists");
+			driver.navigate().back();
+			}catch(Exception e1) {
+				System.out.println("Catergory is added");
+				
+			}
+			
+		}
+	}
+
+		
+	public void HideCategory() {
+		driver.findElement(By.xpath("//a[contains(text(),'[Advanced]')]")).click();
+		try {
+		Boolean flag=driver.findElement(By.xpath("//*[@value='Add category']")).isDisplayed();
+		System.out.println("Extra fields are not hided");
+		}catch(Exception e) {
+			System.out.println("Extra fiels are hided");
+		}
+
+	}
+
+	public void Complete(String name) {
+		driver.findElement(By.xpath("//input[@value='Complete']")).click();
+		Boolean flag =driver.findElement(By.xpath("//strike[starts-with(text(),'"+name+"')]")).isDisplayed();
+		if(flag) {
+			System.out.println("TODO is completed");
+		}else {
+			System.out.println("TODO is not Completed");
+		}
+	}
+
+	public void ToggelAll() {
+		driver.findElement(By.xpath("//input[@name='allbox']")).click();
+	}
+	
+
+	public void selectionofToDo(String name) {
+		driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
+		driver.findElement(By.xpath("//*[starts-with(text(),'"+name+"')]/preceding-sibling::input")).click();
+		Boolean flag=driver.findElement(By.xpath("//*[starts-with(text(),'"+name+"')]/preceding-sibling::input")).isSelected();
+		if(flag) {
+			System.out.println("ToDo is selected");
+		}
+		else {
+			System.out.println("ToDo is not Selected");
+		}
+		
+	}
+			
+	public void RemoveCategory(String categories, String yesorNM){
+		driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
+		try {
+		driver.findElement(By.xpath("//span[normalize-space()='"+categories+"']/parent::a")).click();
+			
+				if(yesorNM.equals("yes")) {
+					String yes = "//a[contains(text(),'Yes')]";
+					driver.findElement(By.xpath(yes)).click();
+					try {
+					Boolean flag=driver.findElement(By.xpath("//span[normalize-space()='"+categories+"']/parent::a")).isDisplayed();
+					if(flag) {
+						System.out.println("Category is not removed");
+					}else {
+						System.out.println("Categeory is removed");
+					}
+					}catch(Exception e) {
+						
+						System.out.println("category is removed");
+					}
+				}else {
+					String NM = "//a[contains(text(),'Nevermind')]";
+					driver.findElement(By.xpath(NM)).click();
+					try {
+						Boolean flag=driver.findElement(By.xpath("//span[contains(text(),'"+categories+"')]")).isDisplayed();
+						if(flag) {
+							System.out.println("Category is not removed");
+						}else {
+							System.out.println("Categeory is removed");
+						}
+						}catch(Exception e) {
+							
+							System.out.println("category is not removed");
+						}
+				}				
+		}catch(Exception e) {
+			
+			System.out.println("Category not available");
+		}
+	
+	}
+	
+	
+	
+	//Test scripts
+	//Creation of Category then TODO then Remove the TODO
+	//Creation of Category then TODO then complete
+	//Creation of TODOs then Toggle All then complete
+	//Creation of same color Category and name of category
+	//Creation of same name TODOS
+	//Modification of Category	
+	//Creation of TODOs then Toggle All then Remove
+	//Hiding the Advanced
+	
+	@Test
+	public void Testcase() {
+		
+		
+		login();
+		//Creation of Category then TODO then Remove the TODO
+		AddCategory("Spring","Green","NM");
+		AddTodo("Download Files","Spring","2","Jan","2020");
+		selectionofToDo("Download Files");
+		RemoveTodo("Download Files");
+
+		
+		//Creation of Category then TODO then complete and same name of TODO
+		AddCategory("Winter","Blue","NM");
+		AddTodo("Download Files","Winter","2","Jan","2020");
+		AddTodo("Download Files","Winter","2","Jan","2020");
+		selectionofToDo("Download Files");
+		Complete("Download Files");
+		
+		//Creation of TODOs then Toggle All then complete 
+		AddTodo("Installation","Winter","None","Jan","2020");
+		AddTodo("Upgrading","Winter","4","Jan","2020");
+		ToggelAll();
+		Complete("Installation");
+		Complete("Upgrading");
+		
+		
+		//Creation of same color Category and modification of name
+		AddCategory("Summer","Gray","NM");
+		AddCategory("Season","Gray","NM");
+		AddCategory("Season","Gray","Add");
+		AddCategory("Season","Gray","rename");
+		RemoveCategory("Summer","NM");
+		RemoveCategory("Summer","yes");
+		RemoveCategory("Season","yes");
+		
+		
+		//Creation of TODOs then Toggle All then Remove
+		AddTodo("Loading","Winter","5","Jan","2020");
+		AddTodo("Networking","Winter","4","Jan","2020");
+		ToggelAll();
+		RemoveTodo("Networking");
+		
+		//Hiding the Advanced
+		HideCategory(); 
+	  driver.close();	
+		
+	}
+	
+	
+
+	}
